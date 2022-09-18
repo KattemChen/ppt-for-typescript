@@ -1,0 +1,15 @@
+{
+  "name": "typescript-share",
+  "private": true,
+  "scripts": {
+    "build": "slidev build",
+    "dev": "slidev --open",
+    "export": "slidev export"
+  },
+  "dependencies": {
+    "@nuxt/kit": "npm:@nuxt/kit-edge@3.0.0-rc.9-27699566.0339a23",
+    "@slidev/cli": "^0.35.6",
+    "@slidev/theme-default": "*",
+    "@slidev/theme-seriph": "*"
+  }
+}
