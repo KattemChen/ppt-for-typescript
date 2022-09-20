@@ -413,6 +413,6 @@ export interface GetUserInfoAPi {
 
 https://bigfrontend.dev/zh/typescript/
 
-```
+https://www.typescriptlang.org/zh/play
 
-```
+https://codesandbox.io/s/typescript-playground-export-forked-cmbsyq?file=/index.ts
