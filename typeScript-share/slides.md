@@ -99,9 +99,13 @@ interface MyFn {
   number: string
 }
 
-````
+interface MyFn {
+  (number): string
+}
 
-extends 与 implements
+```
+
+extends 与 implements 区别
 
 <div grid="~ cols-2 gap-2" m="-t-2">
 
@@ -180,6 +184,13 @@ keyof 类比于 Object.keys( {a:1 , b:2 } )=>return ['a','b'],返回的是 'a'|'
 但是只能访问出 公共属性(public property),私有属性(private property)是无法获取的;
 
 ```ts
+const user = {
+  id: 666,
+  name: "CC",
+}
+
+const userName = getProperty(user, "name")
+
 function getProperty(obj:object, key:string) {
   return obj[key];
 }
@@ -187,13 +198,6 @@ function getProperty(obj:object, key:string) {
   No index signature with a parameter of type 'string' was found on type '{}'.
 //元素隐式具有 "any" 类型，因为类型为 "string" 的表达式不能用于索引类型 "{}"。
 //在类型 "{}" 上找不到具有类型为 "string" 的参数的索引签名.
-
-const user = {
-  id: 666,
-  name: "CC",
-}
-
-const userName = getProperty(user, "name")
 
 //正确的写法是这样的,映射类型
 
@@ -275,6 +279,10 @@ type Parameters<T extends (...args: any) => any> = T extends (
 ) => any
   ? P
   : never
+```
+---
+
+```ts
 
 //ReturnType（返回类型）接收一个函数.返回的是该函数的返回值
 type ReturnType<T extends (...args: any) => any> = T extends (
@@ -282,7 +290,10 @@ type ReturnType<T extends (...args: any) => any> = T extends (
 ) => infer R
   ? R
   : any
+
 ```
+
+以上就是最长见到的ts内置的类型别名了；此外还有一些别的不常用到的，但是有可能会碰到的；
 
 ---
 
@@ -366,7 +377,7 @@ interface Staff {
   salary: number
 }
 
-//属性名约束在Staff这个type里，value一定是string类型
+//属性名约束在Staff这个type里，value一定是string类型（或者说value一定要是用一种类型的才能是Record）
 
 type StaffJson = Record<keyof Staff, string>
 
@@ -409,6 +420,117 @@ export interface GetUserInfoAPi {
 
 ---
 
+## 获取元祖长度
+
+```ts
+
+type tesla = ['tesla', 'model 3', 'model X', 'model Y']
+type spaceX = ['FALCON 9', 'FALCON HEAVY', 'DRAGON', 'STARSHIP', 'HUMAN SPACEFLIGHT']
+
+type teslaLength = Length<tesla> // expected 4
+type spaceXLength = Length<spaceX> // expected 5
+
+```
+
+```ts
+
+type Length<T extends { length: number }> = T["length"]
+
+```
+
+---
+
+## DeepReadonly
+
+```ts
+
+type X = {
+  x: {
+    a: 1
+    b: 'hi'
+  }
+  y: 'hey'
+}
+
+type Expected = {
+  readonly x: {
+    readonly a: 1
+    readonly b: 'hi'
+  }
+  readonly y: 'hey'
+}
+
+type Todo = DeepReadonly<X> // should be same as `Expected`
+
+```
+
+---
+
+ts类型收窄的方式，其中 is 是最好用的一种
+
+```ts
+
+type Rect = {
+  width:number
+  height: number
+}
+
+type Circle = {
+  center:[number,number]
+  radius: number
+}
+
+function isRect(x: Rect|Circle) : boolean {
+  return 'height' in x && 'width' in x
+}
+//example
+const fn = (a: Rect | Circle)=>{
+  if(isRect(a)) {
+    a
+  } else {
+    a
+  }
+}
+
+```
+
+---
+
+DeepReadonly，顾名思义，deep + readonly
+
+Record将一个类型的所有属性值都映射到另一个类型上并创造一个新的类型
+
+```ts
+
+type DeepReadonly<T> = T extends any ? {
+  readonly [K in keyof T]: T[K] extends Record<string|number|symbol, unknown>|any[]
+    ? DeepReadonly<T[K]>
+    : T[K]
+} : never;
+
+```
+
+```ts
+type X = {
+  x: {
+    a: 1
+    b: 'hi'
+  }
+  y: 'hey'
+}
+type Expected = {
+  readonly x: {
+    readonly a: 1
+    readonly b: 'hi'
+  }
+  readonly y: 'hey'
+}
+type Todo = DeepReadonly<X>
+
+```
+
+---
+
 # Learn More
 
 https://bigfrontend.dev/zh/typescript/
@@ -416,3 +538,4 @@ https://bigfrontend.dev/zh/typescript/
 https://www.typescriptlang.org/zh/play
 
 https://codesandbox.io/s/typescript-playground-export-forked-cmbsyq?file=/index.ts
+````
