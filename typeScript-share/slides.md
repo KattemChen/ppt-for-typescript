@@ -440,6 +440,37 @@ type Length<T extends { length: number }> = T["length"]
 
 ---
 
+ts类型收窄的方式，其中 is 是最好用的一种
+
+```ts
+
+type Rect = {
+  width:number
+  height: number
+}
+
+type Circle = {
+  center:[number,number]
+  radius: number
+}
+
+// boolean 替换成 x is Rect
+function isRect(x: Rect|Circle) : boolean {
+  return 'height' in x && 'width' in x
+}
+//example
+const fn = (a: Rect | Circle)=>{
+  if(isRect(a)) {
+    a
+  } else {
+    a
+  }
+}
+
+```
+
+---
+
 ## DeepReadonly
 
 ```ts
@@ -461,36 +492,6 @@ type Expected = {
 }
 
 type Todo = DeepReadonly<X> // should be same as `Expected`
-
-```
-
----
-
-ts类型收窄的方式，其中 is 是最好用的一种
-
-```ts
-
-type Rect = {
-  width:number
-  height: number
-}
-
-type Circle = {
-  center:[number,number]
-  radius: number
-}
-
-function isRect(x: Rect|Circle) : boolean {
-  return 'height' in x && 'width' in x
-}
-//example
-const fn = (a: Rect | Circle)=>{
-  if(isRect(a)) {
-    a
-  } else {
-    a
-  }
-}
 
 ```
 
